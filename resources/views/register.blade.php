@@ -129,7 +129,8 @@
                 const password = passwordInput.value;
                 const passwordConfirmation = passwordConfirmationInput.value;
                 
-                if (passwordConfirmation.length > 0 && password !== passwordConfirmation) {
+                // Validate password match (only called on form submit)
+                if (password !== passwordConfirmation) {
                     passwordConfirmationError.textContent = 'Passwords do not match';
                     passwordConfirmationError.classList.remove('hidden');
                     passwordConfirmationInput.classList.add('border-red-500', 'dark:border-red-500');
@@ -143,17 +144,19 @@
                 }
             }
 
-            // Real-time validation
-            passwordInput.addEventListener('input', function() {
-                validatePassword();
-                // Also re-validate confirmation when password changes
-                if (passwordConfirmationInput.value.length > 0) {
-                    validatePasswordMatch();
+            // Real-time validation for password length only
+            passwordInput.addEventListener('input', validatePassword);
+            passwordInput.addEventListener('blur', validatePassword);
+            
+            // Clear error styling when user types in confirmation field (but don't show error until submit)
+            passwordConfirmationInput.addEventListener('input', function() {
+                // Only clear error styling if passwords match, but don't show error until submit
+                if (passwordInput.value === passwordConfirmationInput.value) {
+                    passwordConfirmationError.classList.add('hidden');
+                    passwordConfirmationInput.classList.remove('border-red-500', 'dark:border-red-500');
+                    passwordConfirmationInput.classList.add('border-[#e3e3e0]', 'dark:border-[#3E3E3A]');
                 }
             });
-            passwordInput.addEventListener('blur', validatePassword);
-            passwordConfirmationInput.addEventListener('input', validatePasswordMatch);
-            passwordConfirmationInput.addEventListener('blur', validatePasswordMatch);
 
             // Form submission validation
             registerForm.addEventListener('submit', function(event) {
