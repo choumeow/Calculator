@@ -91,15 +91,7 @@
                     <div class="bg-white dark:bg-[#161615] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d] rounded-lg p-6">
                         <h2 class="text-xl font-medium mb-4 text-[#1b1b18] dark:text-[#EDEDEC]">History</h2>
                         <div id="history" class="space-y-2 max-h-[420px] overflow-y-auto">
-                            @forelse($calculations ?? [] as $calc)
-                                <div onclick="useHistoryResult('{{ $calc->result }}')" class="p-3 bg-[#FDFDFC] dark:bg-[#0a0a0a] border border-[#e3e3e0] dark:border-[#3E3E3A] rounded-sm cursor-pointer hover:bg-[#e3e3e0] dark:hover:bg-[#3E3E3A] transition-colors">
-                                    <div class="text-sm text-[#706f6c] dark:text-[#A1A09A]">{{ $calc->expression }}</div>
-                                    <div class="text-lg font-medium text-[#1b1b18] dark:text-[#EDEDEC]">{{ $calc->result }}</div>
-                                    <div class="text-xs text-[#706f6c] dark:text-[#A1A09A] mt-1">{{ $calc->created_at->format('M d, Y H:i') }}</div>
-                                </div>
-                            @empty
-                                <p class="text-[#706f6c] dark:text-[#A1A09A] text-sm">No calculations yet</p>
-                            @endforelse
+                            <p class="text-[#706f6c] dark:text-[#A1A09A] text-sm">Loading history...</p>
                         </div>
                     </div>
                 </div>
@@ -361,6 +353,10 @@
 
             // Initialize display
             updateDisplay();
+            
+            // Load history immediately after page loads (non-blocking for login)
+            // This allows the login redirect to complete quickly, then load history
+            loadHistory();
         </script>
     </body>
 </html>

@@ -10,13 +10,14 @@ class CalculatorController extends Controller
 {
     /**
      * Show the calculator page.
+     * Optimized: Don't load calculations on initial page load to speed up login.
+     * Calculations will be loaded via AJAX after page loads.
      */
     public function index(Request $request)
     {
-        $calculations = Calculation::where('username', Auth::user()->username)
-            ->orderBy('created_at', 'desc')
-            ->limit(100) // Limit to 100 most recent records
-            ->get();
+        // Don't load calculations on initial page load - load via AJAX instead
+        // This significantly speeds up the login redirect
+        $calculations = collect([]); // Empty collection for initial load
 
         return view('welcome', compact('calculations'));
     }
@@ -32,7 +33,7 @@ class CalculatorController extends Controller
         ]);
 
         Calculation::create([
-            'username' => Auth::user()->username,
+            'user_id' => Auth::id(),
             'expression' => $validated['expression'],
             'result' => $validated['result'],
         ]);
@@ -42,10 +43,12 @@ class CalculatorController extends Controller
 
     /**
      * Get calculation history for the authenticated user.
+     * Optimized: Only select necessary columns and use composite index.
      */
     public function history(Request $request)
     {
-        $calculations = Calculation::where('username', Auth::user()->username)
+        $calculations = Calculation::where('user_id', Auth::id())
+            ->select('id', 'expression', 'result', 'created_at') // Only select needed columns
             ->orderBy('created_at', 'desc')
             ->limit(100) // Limit to 100 most recent records
             ->get();

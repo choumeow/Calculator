@@ -32,6 +32,7 @@ class LoginController extends Controller
         ]);
 
         // Attempt to authenticate using username instead of email
+        // Laravel's Auth::attempt() is already optimized - it uses the unique index on username
         if (Auth::attempt([
             'username' => $credentials['username'],
             'password' => $credentials['password']
